@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/student")
@@ -29,6 +30,12 @@ public class StudentController {
     public ResponseEntity<List<Student>> listStudents(@RequestParam(required = false, defaultValue = "1") int page, @RequestParam(required = false, defaultValue = "10") int size){
         List<Student> students = studentService.listStudents(page, size);
         return ResponseEntity.ok(students);
+    }
+
+    @GetMapping("/find")
+    public ResponseEntity<?> findStudent(@RequestParam(required = false) Optional<Integer> id, @RequestParam(required = false) Optional<String> name) {
+        Optional<List<Student>> student = studentService.findStudent(id, name);
+        return student.isPresent() && student.get().size() > 0 ? ResponseEntity.ok(student.get()) : ResponseEntity.badRequest().body("There is no such a student with given credentials."); // could be handled in service layer
     }
 
 
